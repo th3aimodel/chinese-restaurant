@@ -1,0 +1,16 @@
+{
+  "name": "chinese-restaurant",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler pages dev ./dist"
+  },
+  "dependencies": {
+    "astro": "^5.7.10"
+  },
+  "devDependencies": {
+    "wrangler": "^4.14.0"
+  }
+}

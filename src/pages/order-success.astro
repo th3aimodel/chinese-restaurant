@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout>
+  <section class="success-page">
+    <div class="icon">🎉</div>
+    <h1>下单成功！</h1>
+    <p>您的订单已提交，我们会尽快为您备餐</p>
+    <p id="order-id" style="font-size:14px;color:var(--text-light);margin-bottom:24px;"></p>
+    <a href="/menu" class="hero-btn" style="font-size:16px;padding:12px 32px;">继续点餐</a>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('id');
+  if (orderId) {
+    document.getElementById('order-id').textContent = '订单号：' + orderId;
+  }
+</script>

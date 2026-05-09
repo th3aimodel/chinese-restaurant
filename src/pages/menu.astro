@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categories, dishes } from '../data/menu';
+---
+
+<BaseLayout>
+  <section class="menu-page container">
+    <h2 style="font-size:24px;margin-bottom:4px;">📋 完整菜单</h2>
+    <p style="color:var(--text-light);margin-bottom:12px;">选择你喜欢的菜系，加入购物车下单</p>
+
+    <!-- Category Tabs -->
+    <div class="menu-tabs">
+      <button class="menu-tab active" onclick="filterCategory('all')">全部</button>
+      {categories.map(cat => (
+        <button class="menu-tab" onclick={`filterCategory('${cat.id}')`}>
+          {cat.emoji} {cat.name}
+        </button>
+      ))}
+    </div>
+
+    <!-- Dish List by Category -->
+    {categories.map(cat => {
+      const catDishes = dishes.filter(d => d.category === cat.id);
+      return (
+        <div class="category-section" data-category={cat.id}>
+          <h3 id={cat.id} style="font-size:20px;margin:24px 0 12px;padding-top:8px;">
+            {cat.emoji} {cat.name}
+            <span style="font-size:14px;color:var(--text-light);font-weight:400;margin-left:8px;">{cat.description}</span>
+          </h3>
+          <div class="dish-grid">
+            {catDishes.map(dish => (
+              <div class="dish-card" data-dish-id={dish.id} data-category={dish.category}>
+                <div class="dish-emoji">{dish.emoji}</div>
+                <div class="dish-info">
+                  <h3>{dish.name}</h3>
+                  <div class="desc">{dish.description}</div>
+                  <div class="meta">
+                    <div class="dish-price">¥{dish.price}<small>/份</small>
+                      {dish.spicy > 0 && (
+                        <span class="spicy-dots">
+                          {[1,2,3].map(i => (
+                            <span class={`spicy-dot ${i <= dish.spicy ? 'active' : ''}`}></span>
+                          ))}
+                        </span>
+                      )}
+                    </div>
+                    <div class="dish-actions">
+                      <button class="btn-add" onclick={`addToCart('${dish.id}','${dish.name}',${dish.price},'${dish.emoji}')`}>加入</button>
+                      <div class="qty-control" style="display:none">
+                        <button class="qty-btn" onclick={`changeQtyDish('${dish.id}',-1)`}>−</button>
+                        <span class="qty-num">0</span>
+                        <button class="qty-btn" onclick={`changeQtyDish('${dish.id}',1)`}>+</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    })}
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  function filterCategory(catId) {
+    document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+
+    document.querySelectorAll('.category-section').forEach(sec => {
+      if (catId === 'all' || sec.dataset.category === catId) {
+        sec.style.display = 'block';
+      } else {
+        sec.style.display = 'none';
+      }
+    });
+  }
+
+  function changeQtyDish(dishId, delta) {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const idx = cart.findIndex(i => i.id === dishId);
+    if (idx === -1) return;
+    cart[idx].quantity += delta;
+    if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    if (typeof updateCartUI === 'function') updateCartUI();
+  }
+</script>

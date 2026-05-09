@@ -1,0 +1,189 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 - 中华美食</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles/global.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="header-logo"><span>🥢</span> 中华美食 · 管理后台</a>
+      <nav class="header-nav">
+        <a href="/">返回前台</a>
+        <button onclick="logout()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:14px;">退出登录</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Login -->
+  <div id="login-section" class="admin-login">
+    <h2>🔐 管理员登录</h2>
+    <input type="password" id="admin-pwd" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">登录</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="admin-section" class="admin-page container" style="display:none;">
+    <div class="admin-header">
+      <h2>📦 订单管理</h2>
+      <span id="order-count" style="color:var(--text-light);font-size:14px;"></span>
+    </div>
+
+    <div class="admin-filters">
+      <button class="filter-btn active" onclick="filterOrders('all')">全部</button>
+      <button class="filter-btn" onclick="filterOrders('pending')">⏳ 待处理</button>
+      <button class="filter-btn" onclick="filterOrders('preparing')">🍳 制作中</button>
+      <button class="filter-btn" onclick="filterOrders('ready')">✅ 待取餐</button>
+      <button class="filter-btn" onclick="filterOrders('completed')">📦 已完成</button>
+    </div>
+
+    <div id="orders-list"></div>
+    <div id="no-orders" class="no-orders" style="display:none;">
+      <span style="font-size:48px;">📭</span>
+      <p>暂无订单</p>
+    </div>
+  </div>
+
+  <script is:inline>
+    let adminToken = localStorage.getItem('admin_token') || '';
+    let allOrders = [];
+    let currentFilter = 'all';
+
+    // Auto-check login
+    if (adminToken) {
+      loadOrders();
+    }
+
+    async function doLogin() {
+      const pwd = document.getElementById('admin-pwd').value;
+      if (!pwd) return;
+      adminToken = pwd;
+      const ok = await loadOrders();
+      if (!ok) {
+        alert('密码错误');
+        adminToken = '';
+        localStorage.removeItem('admin_token');
+      }
+    }
+
+    function logout() {
+      adminToken = '';
+      localStorage.removeItem('admin_token');
+      document.getElementById('login-section').style.display = 'block';
+      document.getElementById('admin-section').style.display = 'none';
+    }
+
+    async function loadOrders() {
+      try {
+        const resp = await fetch('/api/orders', {
+          headers: { 'X-Admin-Token': adminToken }
+        });
+        if (!resp.ok) throw new Error('auth failed');
+        allOrders = await resp.json();
+        localStorage.setItem('admin_token', adminToken);
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('admin-section').style.display = 'block';
+        renderOrders();
+        return true;
+      } catch(e) {
+        return false;
+      }
+    }
+
+    function filterOrders(status) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const filtered = currentFilter === 'all'
+        ? allOrders
+        : allOrders.filter(o => o.status === currentFilter);
+
+      document.getElementById('order-count').textContent = `共 ${allOrders.length} 个订单`;
+      const listEl = document.getElementById('orders-list');
+      const noEl = document.getElementById('no-orders');
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '';
+        noEl.style.display = 'block';
+        return;
+      }
+      noEl.style.display = 'none';
+
+      const statusMap = {
+        pending: '待处理',
+        preparing: '制作中',
+        ready: '待取餐',
+        completed: '已完成',
+        cancelled: '已取消'
+      };
+
+      listEl.innerHTML = filtered.map(order => `
+        <div class="order-card ${order.status}">
+          <div class="order-top">
+            <div>
+              <div class="order-id">订单号：${order.id}</div>
+              <div class="order-customer">👤 ${order.customer_name} · 📱 ${order.phone}</div>
+              <div class="order-address">📍 ${order.address}</div>
+              ${order.notes ? `<div style="font-size:13px;color:var(--gold);margin-top:4px;">💬 ${order.notes}</div>` : ''}
+            </div>
+            <div style="text-align:right;">
+              <span class="order-status ${order.status}">${statusMap[order.status] || order.status}</span>
+              <div class="order-time" style="margin-top:4px;">${order.created_at || ''}</div>
+            </div>
+          </div>
+          <div class="order-dishes">
+            ${order.items ? order.items.map(it => `
+              <div class="order-dish">
+                <span>${it.dish_name} × ${it.quantity}</span>
+                <span>¥${it.dish_price * it.quantity}</span>
+              </div>
+            `).join('') : ''}
+          </div>
+          <div class="order-total">
+            <span>合计</span>
+            <span>¥${order.total_price}</span>
+          </div>
+          <div class="order-actions">
+            ${order.status === 'pending' ? `<button class="status-btn" onclick="updateStatus('${order.id}','preparing')">🍳 开始制作</button>` : ''}
+            ${order.status === 'preparing' ? `<button class="status-btn" onclick="updateStatus('${order.id}','ready')">✅ 制作完成</button>` : ''}
+            ${order.status === 'ready' ? `<button class="status-btn" onclick="updateStatus('${order.id}','completed')">📦 已送达</button>` : ''}
+            ${['pending','preparing'].includes(order.status) ? `<button class="status-btn" onclick="updateStatus('${order.id}','cancelled')" style="color:#EF4444;">❌ 取消</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateStatus(orderId, status) {
+      try {
+        const resp = await fetch(`/api/orders/${orderId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': adminToken
+          },
+          body: JSON.stringify({ status })
+        });
+        if (!resp.ok) throw new Error('更新失败');
+        await loadOrders();
+      } catch(e) {
+        alert('更新失败：' + e.message);
+      }
+    }
+
+    // Auto-refresh every 15 seconds
+    setInterval(() => {
+      if (adminToken) loadOrders();
+    }, 15000);
+  </script>
+</body>
+</html>

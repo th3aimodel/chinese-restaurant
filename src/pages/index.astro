@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categories, dishes } from '../data/menu';
+---
+
+<BaseLayout>
+  <!-- Hero -->
+  <section class="hero">
+    <h1>🥢 中华美食</h1>
+    <p>正宗粤菜 · 地道湘菜 · 麻辣川菜 · 豪爽东北菜</p>
+    <a href="/menu" class="hero-btn">📋 立即点餐</a>
+  </section>
+
+  <!-- Categories -->
+  <section class="container">
+    <h2 style="text-align:center;font-size:24px;padding-top:32px;">🍜 菜系分类</h2>
+    <div class="category-grid">
+      {categories.map(cat => (
+        <a href={`/menu#${cat.id}`} class="category-card">
+          <div class="emoji">{cat.emoji}</div>
+          <h3>{cat.name}</h3>
+          <p>{cat.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Featured Dishes -->
+  <section class="container" style="padding-bottom:48px;">
+    <h2 style="text-align:center;font-size:24px;margin-bottom:8px;">🔥 热门推荐</h2>
+    <p style="text-align:center;color:var(--text-light);margin-bottom:20px;">精选人气菜品，好吃不踩雷</p>
+    <div class="dish-grid">
+      {dishes.filter(d => ['x1','c4','d1','y2','c3','x3'].includes(d.id)).map(dish => {
+        const cat = categories.find(c => c.id === dish.category);
+        return (
+          <div class="dish-card" data-dish-id={dish.id}>
+            <div class="dish-emoji">{dish.emoji}</div>
+            <div class="dish-info">
+              <h3>{dish.name}</h3>
+              <div class="desc">{dish.description} · {cat?.name}</div>
+              <div class="meta">
+                <div class="dish-price">¥{dish.price}<small>/份</small>
+                  {dish.spicy > 0 && (
+                    <span class="spicy-dots">
+                      {[1,2,3].map(i => (
+                        <span class={`spicy-dot ${i <= dish.spicy ? 'active' : ''}`}></span>
+                      ))}
+                    </span>
+                  )}
+                </div>
+                <div class="dish-actions">
+                  <button class="btn-add" onclick={`addToCart('${dish.id}','${dish.name}',${dish.price},'${dish.emoji}')`}>加入</button>
+                  <div class="qty-control" style="display:none">
+                    <button class="qty-btn" onclick={`changeQtyCart('${dish.id}',-1)`}>−</button>
+                    <span class="qty-num">0</span>
+                    <button class="qty-btn" onclick={`changeQtyCart('${dish.id}',1)`}>+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+    <div style="text-align:center;">
+      <a href="/menu" class="hero-btn" style="font-size:16px;padding:12px 32px;">查看完整菜单 →</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  function changeQtyCart(dishId, delta) {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const idx = cart.findIndex(i => i.id === dishId);
+    if (idx === -1) return;
+    cart[idx].quantity += delta;
+    if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    if (typeof updateCartUI === 'function') updateCartUI();
+  }
+</script>
