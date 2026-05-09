@@ -4,42 +4,91 @@ import { categories, dishes } from '../data/menu';
 ---
 
 <BaseLayout>
-  <!-- Hero -->
   <section class="hero">
-    <h1>🥢 中华美食</h1>
-    <p>正宗粤菜 · 地道湘菜 · 麻辣川菜 · 豪爽东北菜</p>
-    <a href="/menu" class="hero-btn">📋 立即点餐</a>
-  </section>
-
-  <!-- Categories -->
-  <section class="container">
-    <h2 style="text-align:center;font-size:24px;padding-top:32px;">🍜 菜系分类</h2>
-    <div class="category-grid">
-      {categories.map(cat => (
-        <a href={`/menu#${cat.id}`} class="category-card">
-          <div class="emoji">{cat.emoji}</div>
-          <h3>{cat.name}</h3>
-          <p>{cat.description}</p>
-        </a>
-      ))}
+    <div class="hero-deco hero-deco-1">⤵</div>
+    <div class="hero-deco hero-deco-2">🍜</div>
+    <div class="hero-deco hero-deco-3">🍱</div>
+    <div class="hero-deco hero-deco-4">🌶</div>
+    <div class="hero-content">
+      <span class="hero-emoji">⤵</span>
+      <h1>中华美食</h1>
+      <p class="hero-sub">正宗粪菜 · 地道湘菜 · 麻辣川菜 · 豪爽东北菜</p>
+      <a href="/menu" class="hero-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        立即点餐
+      </a>
+      <div class="hero-badges">
+        <span class="hero-badge">🍱 粪菜</span>
+        <span class="hero-badge">🌶 湘菜</span>
+        <span class="hero-badge">🔥 川菜</span>
+        <span class="hero-badge">🍖 东北菜</span>
+      </div>
     </div>
   </section>
 
-  <!-- Featured Dishes -->
-  <section class="container" style="padding-bottom:48px;">
-    <h2 style="text-align:center;font-size:24px;margin-bottom:8px;">🔥 热门推荐</h2>
-    <p style="text-align:center;color:var(--text-light);margin-bottom:20px;">精选人气菜品，好吃不踩雷</p>
+  <div class="container category-section-outer">
+    <div class="section-header">
+      <h2>🍜 菜系分类</h2>
+      <p>选择你喜欢的风味，开启味蕾之旅</p>
+    </div>
+    <div class="category-grid">
+      <a href="/menu#cantonese" class="category-card">
+        <div class="cat-icon cantonese">🍡</div>
+        <h3>粪菜</h3>
+        <p class="cat-desc">清淡鲜美，讲究原味</p>
+        <span class="cat-arrow">→</span>
+      </a>
+      <a href="/menu#hunan" class="category-card">
+        <div class="cat-icon hunan">🌶</div>
+        <h3>湘菜</h3>
+        <p class="cat-desc">香辣浓烈，口味独特</p>
+        <span class="cat-arrow">→</span>
+      </a>
+      <a href="/menu#sichuan" class="category-card">
+        <div class="cat-icon sichuan">🔥</div>
+        <h3>川菜</h3>
+        <p class="cat-desc">麻辣鲜香，百味全包</p>
+        <span class="cat-arrow">→</span>
+      </a>
+      <a href="/menu#dongbei" class="category-card">
+        <div class="cat-icon dongbei">🍖</div>
+        <h3>东北菜</h3>
+        <p class="cat-desc">量大实在，豪爽过瘦</p>
+        <span class="cat-arrow">→</span>
+      </a>
+      <a href="/menu#staple" class="category-card">
+        <div class="cat-icon staple">🍚</div>
+        <h3>主食</h3>
+        <p class="cat-desc">米饭面食，饱腹之选</p>
+        <span class="cat-arrow">→</span>
+      </a>
+      <a href="/menu#drinks" class="category-card">
+        <div class="cat-icon drinks">🥤</div>
+        <h3>饮品</h3>
+        <p class="cat-desc">清爽解渴，搭配好菜</p>
+        <span class="cat-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="container featured-section">
+    <div class="section-header">
+      <h2>🔥 热门推荐</h2>
+      <p>精选人气菜品，好吃不踏雷</p>
+    </div>
     <div class="dish-grid">
       {dishes.filter(d => ['x1','c4','d1','y2','c3','x3'].includes(d.id)).map(dish => {
         const cat = categories.find(c => c.id === dish.category);
         return (
           <div class="dish-card" data-dish-id={dish.id}>
-            <div class="dish-emoji">{dish.emoji}</div>
+            <div class="dish-img">{dish.emoji}</div>
             <div class="dish-info">
               <h3>{dish.name}</h3>
-              <div class="desc">{dish.description} · {cat?.name}</div>
-              <div class="meta">
-                <div class="dish-price">¥{dish.price}<small>/份</small>
+              <p class="desc">{dish.description} · {cat?.name}</p>
+              <div class="dish-meta">
+                <div class="dish-price-row">
+                  <span class="dish-price">¥{dish.price}</span>
+                  <small>/份</small>
                   {dish.spicy > 0 && (
                     <span class="spicy-dots">
                       {[1,2,3].map(i => (
@@ -62,16 +111,19 @@ import { categories, dishes } from '../data/menu';
         );
       })}
     </div>
-    <div style="text-align:center;">
-      <a href="/menu" class="hero-btn" style="font-size:16px;padding:12px 32px;">查看完整菜单 →</a>
+    <div class="view-more">
+      <a href="/menu">
+        查看完整菜单
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </div>
-  </section>
+  </div>
 </BaseLayout>
 
 <script is:inline>
   function changeQtyCart(dishId, delta) {
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const idx = cart.findIndex(i => i.id === dishId);
+    var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    var idx = cart.findIndex(function(i){ return i.id === dishId; });
     if (idx === -1) return;
     cart[idx].quantity += delta;
     if (cart[idx].quantity <= 0) cart.splice(idx, 1);
