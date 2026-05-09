@@ -79,6 +79,12 @@ a { color: inherit; text-decoration: none; }
   padding:2px 8px; border-radius:20px;
 }
 .header-nav { display:flex; align-items:center; gap:16px; }
+
+/* Header links (mobile hamburger menu) */
+.header-links { display: none; }
+.menu-toggle { display: none; }
+
+
 .header-nav a {
   font-size:15px; font-weight:500; color:var(--text-mid);
   transition: color .2s; padding:4px 0;
@@ -678,4 +684,242 @@ a { color: inherit; text-decoration: none; }
   .admin-stats { grid-template-columns:repeat(2,1fr); }
   .checkout-card, .admin-card { padding:24px 20px; }
   .cart-sidebar { width:100vw; }
+}
+
+
+/* ═════════════════════════════════════
+   移动端适配 Mobile Adaptation
+════════════════════════════════════ */
+@media (max-width: 639px) {
+  /* ── 基础调整 ── */
+  html { font-size: 14px; }
+  body { -webkit-text-size-adjust: 100%; }
+  
+  .container { padding: 0 16px; }
+  
+  /* ── Header 移动版 ── */
+  .header { height: 56px; }
+  .header-inner { padding: 0 16px; }
+  .header-logo .logo-text { display: none; }
+  .header-logo .logo-emoji { font-size: 28px; }
+  .logo-badge { display: none; }
+  
+  .header-nav a { display: none; }
+  .header-nav { gap: 8px; }
+  .cart-btn { 
+    padding: 10px 16px; 
+    font-size: 13px;
+    border-radius: 50px;
+  }
+  .cart-btn::before { content: '🛒'; margin-right: 4px; }
+  .cart-btn span:not(.cart-badge) { display: none; }
+  
+  /* 移动端汉堡菜单按钮 */
+  .menu-toggle {
+    display: flex; flex-direction: column; gap: 5px;
+    background: none; border: none; padding: 8px;
+    cursor: pointer; z-index: 110;
+  }
+  .menu-toggle span {
+    width: 24px; height: 2px; background: var(--text);
+    border-radius: 2px; transition: transform .2s, opacity .2s;
+  }
+  .header-nav.mobile-open .menu-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .header-nav.mobile-open .menu-toggle span:nth-child(2) { opacity: 0; }
+  .header-nav.mobile-open .menu-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+  .header-nav.mobile-open ~ .header-links { 
+    display: flex; flex-direction: column;
+    position: absolute; top: 56px; left: 0; right: 0;
+    background: var(--surface); padding: 16px;
+    box-shadow: var(--shadow-md); border-radius: 0 0 16px 16px;
+  }
+  .header-nav.mobile-open ~ .header-links a {
+    display: block; padding: 14px 0; font-size: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-nav.mobile-open ~ .header-links a:last-child { border: none; }
+  
+  /* ── Hero 移动版 ── */
+  .hero { padding: 40px 16px; min-height: auto; }
+  .hero-content { text-align: center; }
+  .hero h1 { font-size: 2rem; }
+  .hero-emoji { font-size: 48px; }
+  .hero-sub { font-size: 13px; flex-direction: column; gap: 8px; }
+  .hero-badges { flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .hero-badge { font-size: 12px; padding: 6px 10px; }
+  
+  /* ── Category 移动版 ── */
+  .category-section-outer { padding: 32px 0; }
+  .category-grid { 
+    grid-template-columns: repeat(2, 1fr); gap: 12px; 
+  }
+  .category-card { padding: 16px; }
+  .cat-icon { font-size: 32px; margin-bottom: 8px; }
+  .cat-desc { display: none; }
+  .cat-arrow { display: none; }
+  
+  /* ── Dish Grid 移动版 ── */
+  .dish-grid { 
+    grid-template-columns: repeat(2, 1fr); gap: 12px; 
+  }
+  .dish-card { flex-direction: column; padding: 12px; }
+  .dish-img { 
+    width: 100%; height: 80px; font-size: 40px;
+    border-radius: 12px 12px 0 0;
+  }
+  .dish-info { padding: 12px; }
+  .dish-info h3 { font-size: 15px; }
+  .dish-info .desc { font-size: 12px; -webkit-line-clamp: 1; }
+  .dish-meta { flex-direction: column; gap: 10px; align-items: stretch; }
+  .dish-price-row { justify-content: space-between; }
+  .dish-price { font-size: 18px; }
+  .dish-actions { display: flex; gap: 8px; }
+  .dish-actions .btn-add { 
+    flex: 1; height: 40px; font-size: 14px;
+    border-radius: 8px; 
+  }
+  .qty-control { height: 40px; border-radius: 8px; }
+  .qty-btn { width: 40px; }
+  .qty-num { flex: 1; font-size: 16px; }
+  .spicy-dots { margin-left: auto; }
+  
+  /* ── Featured ── */
+  .featured-section { padding: 32px 0; }
+  .section-header h2 { font-size: 1.4rem; }
+  .view-more { margin-top: 24px; }
+  
+  /* ── Menu Page 移动版 ── */
+  .menu-page { padding: 24px 0; }
+  .menu-hero-text { padding: 0 16px; margin-bottom: 20px; }
+  .menu-hero-text h1 { font-size: 1.6rem; }
+  .menu-hero-text p { font-size: 14px; }
+  
+  .menu-tabs-wrap { 
+    position: sticky; top: 56px; z-index: 50;
+    background: var(--bg); padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .menu-tabs { 
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    padding: 0 16px; gap: 8px;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .menu-tabs::-webkit-scrollbar { display: none; }
+  .menu-tab { 
+    flex-shrink: 0; padding: 10px 16px; font-size: 14px;
+    border-radius: 20px; white-space: nowrap;
+  }
+  
+  .cat-section { padding: 16px; }
+  .cat-title { 
+    font-size: 18px; padding-bottom: 12px; margin-bottom: 12px;
+  }
+  .cat-emoji { font-size: 24px; }
+  .cat-tag { display: none; }
+  
+  /* ── Checkout 移动版 ── */
+  .checkout-page { padding: 24px 16px; }
+  .checkout-card { 
+    padding: 20px; border-radius: 16px; 
+  }
+  .checkout-title { font-size: 1.4rem; margin-bottom: 20px; }
+  
+  .form-group { margin-bottom: 16px; }
+  .form-group label { font-size: 14px; }
+  .form-group input, 
+  .form-group textarea { 
+    padding: 14px; font-size: 16px; /* 16px 避免iOS缩放 */
+    border-radius: 10px; 
+  }
+  .form-group textarea { min-height: 80px; }
+  
+  .order-summary-box { padding: 16px; margin-bottom: 20px; }
+  .order-summary-box h3 { font-size: 15px; }
+  .summary-item { padding: 12px 0; font-size: 14px; }
+  .summary-total { padding-top: 12px; font-size: 16px; }
+  .summary-total .amount { font-size: 24px; }
+  
+  .btn-checkout { 
+    height: 52px; font-size: 16px; 
+    border-radius: 12px;
+  }
+  
+  /* ── Admin 移动版 ── */
+  .admin-page { padding: 20px 16px; }
+  .admin-card { padding: 20px; border-radius: 12px; }
+  .admin-title { font-size: 1.4rem; }
+  .admin-table { font-size: 13px; }
+  .admin-table th, .admin-table td { padding: 10px 8px; }
+  
+  /* ── Cart Sidebar 移动版 ── */
+  .cart-sidebar {
+    width: 100%; max-width: 100%;
+    border-radius: 20px 20px 0 0;
+  }
+  .cart-header { padding: 16px 20px; }
+  .cart-header h2 { font-size: 18px; }
+  .cart-body { padding: 16px; }
+  .cart-footer { padding: 16px 20px; }
+  .cart-total .amount { font-size: 24px; }
+  .btn-checkout { height: 48px; }
+  
+  /* ── Footer 移动版 ── */
+  .footer { padding: 32px 16px; }
+  .footer-inner { font-size: 13px; }
+  .footer-logo { font-size: 16px; }
+  
+  /* ── Toast 移动版 ── */
+  .toast {
+    bottom: 24px; left: 16px; right: 16px;
+    padding: 14px 20px; font-size: 14px;
+    border-radius: 12px;
+  }
+  
+  /* ── Order Success ── */
+  .success-page { padding: 40px 20px; }
+  .success-icon { font-size: 64px; }
+  .success-title { font-size: 1.6rem; }
+  .success-info { font-size: 14px; padding: 16px; }
+  .success-actions { flex-direction: column; gap: 12px; }
+  .success-actions a { height: 48px; font-size: 15px; }
+}
+
+/* ═════════════════════════════════════
+   平板适配 Tablet Adaptation  
+════════════════════════════════════ */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .container { max-width: 640px; }
+  .header-inner { max-width: 640px; }
+  .dish-grid { grid-template-columns: repeat(3, 1fr); }
+  .category-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ═════════════════════���═══════════════
+   触摸优化 Touch Optimization
+════════════════════════════════════ */
+/* 点击高亮 */
+a, button, .menu-tab, .category-card, .dish-card {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* 禁用选择 */
+.category-card, .dish-card, .header, .footer {
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* 保证输入框不小 */
+input[type=text],
+input[type=tel],
+input[type=number],
+textarea {
+  font-size: 16px; /* 防止iOS自动缩放 */
+}
+/* 更大的点击区域 */
+.qty-btn, .btn-add, .menu-tab, .cate-btn {
+  min-height: 44px;
+  min-width: 44px;
 }
