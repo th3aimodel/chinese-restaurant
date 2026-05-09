@@ -1,4 +1,5 @@
 interface Env {
+  DB: D1Database;
   ADMIN_PASSWORD: string;
   WEBHOOK_URL: string;
 }
@@ -6,9 +7,6 @@ interface Env {
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
-
-// In-memory order storage (resets on redeployment, use D1 for persistence)
-const orders: any[] = [];
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
@@ -22,22 +20,21 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   };
 
   const orderId = generateId();
-  const now = new Date(Date.now() + 8 * 3600 * 1000).toISOString().replace('T', ' ').slice(0, 19);
 
-  const order = {
-    id: orderId,
-    customer_name: body.customer_name,
-    phone: body.phone,
-    address: body.address,
-    notes: body.notes || '',
-    total_price: body.total_price,
-    status: 'pending',
-    items: body.items,
-    created_at: now,
-    updated_at: now,
-  };
+  // Insert order
+  await env.DB.prepare(
+    `INSERT INTO orders (id, customer_name, phone, address, notes, total_price, status)
+     VALUES (?, ?, ?, ?, ?, ?, 'pending')`
+  ).bind(orderId, body.customer_name, body.phone, body.address, body.notes || '', body.total_price).run();
 
-  orders.unshift(order);
+  // Insert order items
+  for (const item of body.items) {
+    const itemId = generateId();
+    await env.DB.prepare(
+      `INSERT INTO order_items (id, order_id, dish_name, dish_price, quantity)
+       VALUES (?, ?, ?, ?, ?)`
+    ).bind(itemId, orderId, item.dish_name, item.dish_price, item.quantity).run();
+  }
 
   // Send webhook notification
   const webhookUrl = env.WEBHOOK_URL || '';
@@ -69,6 +66,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const token = request.headers.get('X-Admin-Token');
   if (token !== env.ADMIN_PASSWORD && token !== 'changeme') {
     return new Response('Unauthorized', { status: 401 });
+  }
+
+  const { results: orders } = await env.DB.prepare(
+    `SELECT * FROM orders ORDER BY created_at DESC LIMIT 100`
+  ).all();
+
+  // Get items for each order
+  for (const order of orders as any[]) {
+    const { results: items } = await env.DB.prepare(
+      `SELECT dish_name, dish_price, quantity FROM order_items WHERE order_id = ?`
+    ).bind(order.id).all();
+    order.items = items;
   }
 
   return new Response(JSON.stringify(orders), {

@@ -5,3 +5,8 @@ pages_build_output_dir = "dist"
 [vars]
 ADMIN_PASSWORD = "changeme"
 WEBHOOK_URL = ""
+
+[[d1_databases]]
+binding = "DB"
+database_name = "chinese-restaurant-db"
+database_id = "6c5d029f-2fff-4fce-a54d-fb6f6829e7ae"

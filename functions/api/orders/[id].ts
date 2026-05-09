@@ -1,4 +1,5 @@
 interface Env {
+  DB: D1Database;
   ADMIN_PASSWORD: string;
 }
 
@@ -26,8 +27,10 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return new Response('Invalid status', { status: 400 });
   }
 
-  // Note: With in-memory storage, we can't reliably update across workers
-  // This will work within the same worker instance
+  await env.DB.prepare(
+    `UPDATE orders SET status = ?, updated_at = datetime('now', '+8 hours') WHERE id = ?`
+  ).bind(body.status, orderId).run();
+
   return new Response(JSON.stringify({ id: orderId, status: body.status }), {
     headers: { 'Content-Type': 'application/json' },
   });
