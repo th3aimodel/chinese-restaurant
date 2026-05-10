@@ -34,6 +34,14 @@ export const dishes: Dish[] = [
   { id: 'y6', name: '煲仔饭', price: 35, description: '锅巴香脆，腊味浓郁', category: 'cantonese', spicy: 0, emoji: '🍚' },
   { id: 'y7', name: '豉油皇炒面', price: 26, description: '酱油飘香，面条弹牙', category: 'cantonese', spicy: 0, emoji: '🍝' },
   { id: 'y8', name: '皮蛋瘦肉粥', price: 18, description: '绵密顺滑，暖心暖胃', category: 'cantonese', spicy: 0, emoji: '🥣' },
+  { id: 'y9', name: '豆豉蒸排骨', price: 38, description: '豆香浓郁，排骨软嫩', category: 'cantonese', spicy: 0, emoji: '🍖' },
+  { id: 'y10', name: '梅菜蒸肉饼', price: 32, description: '梅菜咸香，肉饼滑嫩', category: 'cantonese', spicy: 0, emoji: '🥩' },
+  { id: 'y11', name: '西红柿炒蛋', price: 22, description: '酸甜开胃，家常必备', category: 'cantonese', spicy: 0, emoji: '🍅' },
+  { id: 'y12', name: '白灼菜心', price: 26, description: '翠绿爽脆，清淡健康', category: 'cantonese', spicy: 0, emoji: '🥬' },
+  { id: 'y13', name: '咸蛋蒸肉饼', price: 30, description: '咸蛋黄沙，肉饼鲜香', category: 'cantonese', spicy: 0, emoji: '🥚' },
+  { id: 'y14', name: '香菇蒸滑鸡', price: 36, description: '香菇提鲜，鸡肉嫩滑', category: 'cantonese', spicy: 0, emoji: '🐔' },
+  { id: 'y15', name: '蒜蓉粉丝蒸扇贝', price: 48, description: '蒜香扑鼻，扇贝鲜甜', category: 'cantonese', spicy: 0, emoji: '🦪' },
+  { id: 'y16', name: '老火靓汤', price: 28, description: '文火慢炖，滋补养身', category: 'cantonese', spicy: 0, emoji: '🍲' },
 
   // 湘菜
   { id: 'x1', name: '剁椒鱼头', price: 58, description: '鲜辣过瘾，湘菜之魂', category: 'hunan', spicy: 3, emoji: '🐟' },
